@@ -280,13 +280,13 @@ numCores = parallel::detectCores()
 
 # weight
 cl=snow::makeCluster(numCores-1, type="SOCK")
-diabetes.weight.result=snow::parLapply(cl,1:nrow(params),main.weight,params,nsim=5)
+diabetes.weight.result=snow::parLapply(cl,1:nrow(params),main.weight,params,nsim=5000)
 snow::stopCluster(cl)
 save(diabetes.weight.result,file="./diabetes.weight.result.Rdata")
 
 # TotChol
 cl=snow::makeCluster(numCores-1, type="SOCK")
-diabetes.chol.result=snow::parLapply(cl,1:nrow(params),main.chol,params,nsim=5)
+diabetes.chol.result=snow::parLapply(cl,1:nrow(params),main.chol,params,nsim=5000)
 snow::stopCluster(cl)
 save(diabetes.chol.result,file="./diabetes.chol.result.Rdata")
 
