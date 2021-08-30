@@ -18,4 +18,4 @@ Run `run_simulation_BRSS.R` and `run_simulation_URSS.R` for balanced RSS and unb
 2. Diabetes case study \
 Run `run_diabetes_application.R` and `results_diabetes.R` for applications and plots, respectively.
 3. Chronic kidney disease case study \
-Run `run_sim_ckd_application.R` and `results_ckd.R` for applications and plots, respectively. To retrieve the CKD data `data_ckd.Rdata`, run `data_ckd.R`.
+Run `run_sim_ckd_application.R` and `results_ckd.R` for applications and plots, respectively. To retrieve the CKD data used in this study `data_ckd.Rdata`, run `data_ckd.R`.
