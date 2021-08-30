@@ -16,6 +16,6 @@ The NHANES data are publicly available and retrieved in R.
 1. Simulation studies \
 Run `run_simulation_BRSS.R` and `run_simulation_URSS.R` for balanced RSS and unbalanced RSS studies. For plots, run `result_BRSS.R` and `result_URSS.R`.
 2. Diabetes case study \
-Run `run_diabetes.R` and `result_diabetes.R` for applications and plots, respectively.
+Run `run_diabetes_application.R` and `result_diabetes.R` for applications and plots, respectively.
 3. Chronic kidney disease case study \
-Run `run_sim_ckd.R` and `result_ckd.R` for applications and plots, respectively.
+Run `run_sim_ckd_application.R` and `result_ckd.R` for applications and plots, respectively.
