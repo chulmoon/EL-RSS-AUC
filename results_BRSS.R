@@ -11,6 +11,7 @@ load("./brss.normal.result.Rdata")
 # uniform
 #load("./brss.uniform.result.Rdata")
 
+
 params=expand.grid(nx=c(20,40,80),m=c(2,4,5),
                    AUC=c(0.6,0.8,0.9,0.95),corxy=c(1,0.9,0.7))
 
@@ -37,7 +38,7 @@ tb.res=data.frame(tb.res)
 colnames(tb.res)=c("cor","nx","AUC","m","srs-cp","ker-cp","el-cp","srs-len","ker-len","el-len")
 
 ##############################################################
-# Create Summary Table
+# table
 ##############################################################
 retable = matrix(NA,36,14)
 res1 = tb.res %>% 
@@ -66,15 +67,6 @@ for (ii in 1:length(corval)){
   }
 }
 
-# save as csv files
-# normal
-#write.csv(retable,"./brss.res.normal.csv")
-# lognormal
-#write.csv(retable,"./brss.res.lognormal.csv")
-# uniform
-#write.csv(retable,"./brss.res.uniform.csv")
-
-
 ##############################################################
 # Create Plots
 ##############################################################
@@ -83,20 +75,19 @@ for (nn in c(20, 40, 80)){
   for (rr in c(1, 0.9, 0.7)) {
     tb.res.temp = tb.res%>%
       filter(nx==nn,cor==rr)%>%
-      select(AUC,m,"srs-cp","ker-cp","el-cp") 
+      select(AUC,m,"srs-cp","el-cp") 
     
     tb.res.temp.m2 = tb.res.temp %>%
       filter(m==2) %>%
       select(-m) %>%
-      rename("SRS-EL"="srs-cp","RSS-KER (m=2)" = "ker-cp", "RSS-EL (m=2)"="el-cp") %>%
+      rename("SRS-EL"="srs-cp", "RSS-EL (m=2)"="el-cp") %>%
       pivot_longer(-AUC,names_to = "type",values_to = "cp")
     
     tb.res.temp.m4 = tb.res.temp %>%
       filter(m==4) %>%
-      select(AUC,"ker-cp","el-cp") %>%
-      rename( "RSS-KER (m=4)" = "ker-cp", "RSS-EL (m=4)"="el-cp") %>%
+      select(AUC,"el-cp") %>%
+      rename("RSS-EL (m=4)"="el-cp") %>%
       pivot_longer(-AUC,names_to = "type",values_to = "cp")
-    
     
     tb.final = data.frame(rbind(tb.res.temp.m2,tb.res.temp.m4))
     tb.final$AUC=ifelse(tb.final$AUC==0.6,1,ifelse(tb.final$AUC==0.8,2,ifelse(tb.final$AUC==0.9,3,4)))
@@ -107,9 +98,7 @@ for (nn in c(20, 40, 80)){
           type == "SRS-EL" ~ 1,
           type == "RSS-EL (m=2)" ~ 2,
           type == "RSS-EL (m=4)" ~ 3,
-          type == "RSS-KER (m=2)" ~ 4,
-          type == "RSS-KER (m=4)" ~ 5,
-          TRUE ~ 6
+          TRUE ~ 4
         )
       )
     tb.final$pshape=as.factor(tb.final$pshape)
@@ -118,12 +107,11 @@ for (nn in c(20, 40, 80)){
       fig = tb.final %>%
         ggplot(aes(x=AUC,y=cp,col=pshape)) +
         geom_line(aes(linetype=pshape))+
-        scale_linetype_manual(values=c("solid","longdash",
-                                       "dotted","dashed","dotdash"))+
+        scale_linetype_manual(values=c("solid","longdash","dotted"))+
         geom_point(aes(shape=pshape),size=2)+
-        scale_shape_manual(values=0:4)+
+        scale_shape_manual(values=0:2)+
         labs(tx ="AUC", y="Coverage Probability", title=bquote(n[x] == .(nn) ~ rho == .(rr)) )+
-        scale_y_continuous(limits=c(0, 1))+
+        scale_y_continuous(limits=c(0.85, 1))+
         scale_x_continuous(breaks = 1:4, labels = c("0.6","0.8","0.9","0.95")) +
         theme_classic()+
         theme(legend.position="none",
@@ -135,11 +123,11 @@ for (nn in c(20, 40, 80)){
         ggplot(aes(x=AUC,y=cp,col=pshape)) +
         geom_line(aes(linetype=pshape))+
         scale_linetype_manual(values=c("solid","longdash",
-                                       "dotted","dashed","dotdash"))+
+                                       "dotted"))+
         geom_point(aes(shape=pshape),size=2)+
-        scale_shape_manual(values=0:4)+
+        scale_shape_manual(values=0:2)+
         labs(tx ="AUC", y="", title=bquote(n[x] == .(nn) ~ rho == .(rr)))+
-        scale_y_continuous(limits=c(0, 1))+
+        scale_y_continuous(limits=c(0.85, 1))+
         scale_x_continuous(breaks = 1:4, labels = c("0.6","0.8","0.9","0.95")) +
         theme_classic()+
         theme(legend.position="none",
@@ -156,18 +144,18 @@ for (nn in c(20, 40, 80)){
   for (rr in c(1, 0.9, 0.7)) {
     tb.res.temp = tb.res%>%
       filter(nx==nn,cor==rr)%>%
-      select(AUC,m,"srs-len","ker-len","el-len") 
+      select(AUC,m,"srs-len","el-len") 
     
     tb.res.temp.m2 = tb.res.temp %>%
       filter(m==2) %>%
       select(-m) %>%
-      rename("SRS-EL"="srs-len","RSS-KER (m=2)" = "ker-len", "RSS-EL (m=2)"="el-len") %>%
+      rename("SRS-EL"="srs-len","RSS-EL (m=2)"="el-len") %>%
       pivot_longer(-AUC,names_to = "type",values_to = "len")
     
     tb.res.temp.m4 = tb.res.temp %>%
       filter(m==4) %>%
-      select(AUC,"ker-len","el-len") %>%
-      rename( "RSS-KER (m=4)" = "ker-len", "RSS-EL (m=4)"="el-len") %>%
+      select(AUC,"el-len") %>%
+      rename("RSS-EL (m=4)"="el-len") %>%
       pivot_longer(-AUC,names_to = "type",values_to = "len")
     
     
@@ -180,9 +168,7 @@ for (nn in c(20, 40, 80)){
           type == "SRS-EL" ~ 1,
           type == "RSS-EL (m=2)" ~ 2,
           type == "RSS-EL (m=4)" ~ 3,
-          type == "RSS-KER (m=2)" ~ 4,
-          type == "RSS-KER (m=4)" ~ 5,
-          TRUE ~ 6
+          TRUE ~ 4
         )
       )
     tb.final$pshape=as.factor(tb.final$pshape)
@@ -192,11 +178,11 @@ for (nn in c(20, 40, 80)){
         ggplot(aes(x=AUC,y=len,col=pshape)) +
         geom_line(aes(linetype=pshape))+
         scale_linetype_manual(values=c("solid","longdash",
-                                       "dotted","dashed","dotdash"))+
+                                       "dotted"))+
         geom_point(aes(shape=pshape),size=2)+
-        scale_shape_manual(values=0:4)+
+        scale_shape_manual(values=0:2)+
         labs(tx ="AUC", y="Length", title=bquote(n[x] == .(nn) ~ rho == .(rr)))+
-        scale_y_continuous(limits=c(0, 0.4))+
+        scale_y_continuous(limits=c(0.05, 0.38))+
         scale_x_continuous(breaks = 1:4, labels = c("0.6","0.8","0.9","0.95")) +
         theme_classic()+
         theme(legend.position="none",
@@ -207,11 +193,11 @@ for (nn in c(20, 40, 80)){
         ggplot(aes(x=AUC,y=len,col=pshape)) +
         geom_line(aes(linetype=pshape))+
         scale_linetype_manual(values=c("solid","longdash",
-                                       "dotted","dashed","dotdash"))+
+                                       "dotted"))+
         geom_point(aes(shape=pshape),size=2)+
-        scale_shape_manual(values=0:4)+
+        scale_shape_manual(values=0:2)+
         labs(tx ="AUC", y="", title=bquote(n[x] == .(nn) ~ rho == .(rr)))+
-        scale_y_continuous(limits=c(0, 0.4))+
+        scale_y_continuous(limits=c(0.05, 0.38))+
         scale_x_continuous(breaks = 1:4, labels = c("0.6","0.8","0.9","0.95")) +
         theme_classic()+
         theme(legend.position="none",
