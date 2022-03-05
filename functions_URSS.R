@@ -4,7 +4,7 @@ library(RSSampling)
 library(snow)
 
 ####################################################################################
-####### el.rss.test(), from Owen, Modified by Mai Zhou, Modifed by Chul Moon #######
+####### el.rss.test(), from Owen, Modified by Mai Zhou, Modified by Chul Moon #######
 ####################################################################################
 
 el.rss.test <- function(ou, mu, lam, maxit=25, gradtol=1e-7, 
@@ -180,7 +180,7 @@ llogpp <- function( z, eps ){
 }
 
 ##################################################################
-##################### functions for RSS + EL #####################
+#################### functions for URSS + EL #####################
 ##################################################################
 
 # Lemma
@@ -211,8 +211,17 @@ el.auc <- function(mu,x,r.adj) {
 
 # unbalanced RSS
 urss.el.rnew = function(rssx.vec,rssy.vec,rssx,rssy,m,ki,n,lr,nx,ny) {
-	# ki is a vector of size m
-	# lr is a vector of size n
+  # urss.el.rnew finds the Wilks confidence interval using emplik::findUL2.
+  # The adjusted EL function el.auc is used. 
+  
+  ## input:
+  ### rssx and rssy are the ranked set samples obtained by RSSampling::con.rss of x and y, respectively.
+  ### rssx.vec and rssy.vec are the sampled observations of rssx and rssy without rank information.
+  ### m and n are the set sizes for x and y, respectively.
+  ### ki is a vector of size m, whose vector elements are the number of observations quantified in m rank strata
+  ### lr is a vector of size n, whose vector elements are the number of observations quantified in n rank strata
+  ## output:
+  ### confidence interval obtained by emplik::findUL2
 	
 	## delta hat
 	delhat = 0

@@ -25,6 +25,17 @@ el.auc <- function(mu,x,r.adj) {
 }
 
 rss.el.rnew = function(rssx.vec,rssy.vec,rssx,rssy,m,k,n,l) {
+  # rss.el.rnew finds the Wilks confidence interval using emplik::findUL2.
+  # The adjusted EL function el.auc is used. 
+  
+  ## input:
+  ### rssx and rssy are the ranked set samples obtained by RSSampling::con.rss of x and y, respectively.
+  ### rssx.vec and rssy.vec are the sampled observations of rssx and rssy without rank information.
+  ### m and n are the set sizes for x and y, respectively.
+  ### l and r are the number of cycles for x and y, respectively.
+  ## output:
+  ### confidence interval obtained by emplik::findUL2
+  
 	## delta hat
 	delhat = 0
 	for (i in 1:length(rssx.vec)){
