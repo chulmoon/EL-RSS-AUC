@@ -29,7 +29,7 @@ rss.el.rnew = function(rssx.vec,rssy.vec,rssx,rssy,m,k,n,l) {
   # The adjusted EL function el.auc is used. 
   
   ## input:
-  ### rssx and rssy are the ranked set samples obtained by RSSampling::con.rss of x and y, respectively.
+  ### rssx and rssy are the ranked set samples of x and y, respectively.
   ### rssx.vec and rssy.vec are the sampled observations of rssx and rssy without rank information.
   ### m and n are the set sizes for x and y, respectively.
   ### l and r are the number of cycles for x and y, respectively.
@@ -234,4 +234,188 @@ srs.el = function(srsx,srsy,nx,ny){
 	srs.el.res=emplik::findUL2(step=0.005, fun=el.auc, MLE=srs.delhat, x=srsOU, r.adj=srs.r.adj)
 }
 
+##################################################################
+############ RSS sampling function for simulations ###############
+##################################################################
+
+# RSS sampling function for normal distribution simulations
+con.rss.sim.normal = function(m,r,mu,sigma,cor){
+  
+  sample.x=numeric()
+  A=matrix(0,nrow=(m*r),ncol=(m*2))
+  
+  a=1
+  b=0
+  for (j in 1:r){
+    for (i in 1:m){
+      y=stats::rnorm(m,mu,sigma)
+      cy=cor*((y-mu)/sigma) + sqrt(1-cor^2)*stats::rnorm(m)
+      set.xy=data.frame(y,cy)
+      sample.x[a]=set.xy[sort.list(set.xy[,2]),][i,1]
+      a=a+1
+    }
+    b=b+m
+  }
+
+  sample.x=matrix(sample.x,ncol=m,nrow=r,byrow=T)
+  cn=rn=numeric()
+  for (i in 1:r){
+    rn[i]=paste("r","=",i)
+  }
+  for (i in 1:m){
+    cn[i]=paste("m","=",i)
+  }
+  rownames(sample.x)=rn
+  colnames(sample.x)=cn
+  
+  return(list(sample.x=sample.x))
+}
+
+
+# RSS sampling function for uniform distribution simulations
+con.rss.sim.uniform = function(m,r,mu,sigma,cor,theta=1){
+  sample.x=numeric()
+  A=matrix(0,nrow=(m*r),ncol=(m*2))
+  
+  a=1
+  b=0
+  for (j in 1:r){
+    for (i in 1:m){
+      y=stats::runif(m)*theta
+      cy=cor*((y-mu)/sigma) + sqrt(1-cor^2)*stats::rnorm(m)
+      set.xy=data.frame(y,cy)
+      sample.x[a]=set.xy[sort.list(set.xy[,2]),][i,1]
+      a=a+1
+    }
+    b=b+m
+  }
+  
+  sample.x=matrix(sample.x,ncol=m,nrow=r,byrow=T)
+  cn=rn=numeric()
+  for (i in 1:r){
+    rn[i]=paste("r","=",i)
+  }
+  for (i in 1:m){
+    cn[i]=paste("m","=",i)
+  }
+  rownames(sample.x)=rn
+  colnames(sample.x)=cn
+  
+  return(list(sample.x=sample.x))
+}
+
+
+# RSS sampling function for lognormal distribution simulations
+con.rss.sim.lognormal = function(m,r,meanlog=0,sdlog=1,mu,sigma,cor){
+  sample.x=numeric()
+  A=matrix(0,nrow=(m*r),ncol=(m*2))
+  
+  a=1
+  b=0
+  for (j in 1:r){
+    for (i in 1:m){
+      y=stats::rlnorm(m,meanlog=meanlog,sdlog=sdlog)
+      cy=cor*((y-mu)/sigma) + sqrt(1-cor^2)*stats::rnorm(m)
+      set.xy=data.frame(y,cy)
+      sample.x[a]=set.xy[sort.list(set.xy[,2]),][i,1]
+      a=a+1
+    }
+    b=b+m
+  }
+  
+  sample.x=matrix(sample.x,ncol=m,nrow=r,byrow=T)
+  cn=rn=numeric()
+  for (i in 1:r){
+    rn[i]=paste("r","=",i)
+  }
+  for (i in 1:m){
+    cn[i]=paste("m","=",i)
+  }
+  rownames(sample.x)=rn
+  colnames(sample.x)=cn
+  
+  return(list(sample.x=sample.x))
+}
+
+
+##################################################################
+######### RSS-EL function for using G as the reference ###########
+##################################################################
+
+rss.el.switch = function(rssx.vec,rssy.vec,rssx,rssy,m,k,n,l) {
+  # rss.el.switch finds the Wilks confidence interval using emplik::findUL2.
+  # The adjusted EL function el.auc is used. 
+  # reference function: G
+  
+  ## input:
+  ### rssx and rssy are the ranked set samples of x and y, respectively.
+  ### rssx.vec and rssy.vec are the sampled observations of rssx and rssy without rank information.
+  ### m and n are the set sizes for x and y, respectively.
+  ### l and r are the number of cycles for x and y, respectively.
+  ## output:
+  ### confidence interval obtained by emplik::findUL2
+  
+  ## delta hat
+  delhat = 0
+  for (i in 1:length(rssx.vec)){
+    for (j in 1:length(rssy.vec)) {
+      delhat=delhat+(rssy.vec[j]>=rssx.vec[i])
+    }
+  }
+  delhat = delhat/(m*k*n*l)
+  
+  ## U, role switched
+  OU = rep(NA,length(rssx.vec))
+  for (j in 1:length(rssx.vec)) {
+    OU[j] = (sum(rssx.vec[j]<rssy.vec)/(length(rssy.vec)))
+  }
+  
+  ## sum(Uhat-delhat)^2
+  OUDsq = 0
+  for (j in 1:length(rssx.vec)) {
+    OUDsq = OUDsq + (sum(rssx.vec[j]<rssy.vec)/(length(rssy.vec))-delhat)^2
+  }
+  
+  v10i.bar=function(rssx,rssy,i){
+    return(mean(apply(as.matrix(rssx$sample.x[,i]),1,v10,y=rssy.vec,n=n,l=l)))
+  }
+  v01r.bar=function(rssx,rssy,r){
+    return(mean(apply(as.matrix(rssy$sample.x[,r]),1,v01,x=rssx.vec,m=m,k=k)))
+  }
+  
+  ## S^2
+  s10i.sq=function(rssx,rssy,i,k){
+    v10val=apply(as.matrix(rssx$sample.x[,i]),1,v10,y=rssy.vec,n=n,l=l)
+    return(sum( (v10val-v10i.bar(rssx,rssy,i))^2 )/(k-1) )
+  }
+  s01r.sq=function(rssx,rssy,r,l){
+    v01val=apply(as.matrix(rssy$sample.x[,r]),1,v01,x=rssx.vec,m=m,k=k)
+    return(sum( (v01val-v01r.bar(rssx,rssy,r))^2 )/(l-1) )
+  }
+  
+  s10.sq.vec = rep(NA,m)
+  for (ii in 1:m) {
+    s10.sq.vec[ii] = s10i.sq(rssx,rssy,ii,k)
+  }
+  s10.sq = mean(s10.sq.vec)
+  
+  s01.sq.vec = rep(NA,n)
+  for (rr in 1:n) {
+    s01.sq.vec[rr] = s01r.sq(rssx,rssy,rr,l)
+  }
+  s01.sq = mean(s01.sq.vec)
+  
+  S.sq = (n*l*s10.sq+m*k*s01.sq)/(m*k+n*l)
+  
+  if (S.sq==0) return(x=list(Low=NA,Up=NA)) 
+  
+  else {
+    # Theorem 1: adjusted asymptotic dist
+    ## adjustment
+    r.adj = (n*l)/(m*k+n*l)*OUDsq/(m*k*S.sq)
+    
+    rss.el.res = emplik::findUL2(fun=el.auc, MLE=delhat, x=OU, r.adj=r.adj)
+    return(rss.el.res)
+  }
+}
 

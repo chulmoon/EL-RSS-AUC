@@ -26,27 +26,18 @@ main.urss.normal=function(pind,params,nsim=10000){
 		# RSS
 		rss.cond=TRUE
 		while(rss.cond==T){
-			# dist of X
-			nxsam = 10000
-			x=rnorm(nxsam)
-			# concomitant of X
-			cx=corx*x + sqrt(1-corx^2)*rnorm(nxsam)
-			
-			# dist of Y
-			ny.sam= 10000
-			mu = sqrt(5)*qnorm(AUC)
-			sigma = 2
-			y=rnorm(ny.sam,mu,sigma)
-			# concomitant of y
-			cy=cory*((y-mu)/sigma) + sqrt(1-cory^2)*rnorm(ny.sam)
-			
+		  # RSS sampling of X
 			rssx=list()
-			rssx.temp=RSSampling::con.rss(x,cx,m=m,r=max(ki))
+			rssx.temp=con.rss.sim.normal(m=m,r=max(ki),mu=0,sigma=1,cor=corx)
 			for (kk in 1:m){
 				rssx[[kk]]=rssx.temp$sample.x[1:ki[kk],kk]
 			}
+			
+			# RSS sampling of Y
+			mu = sqrt(5)*qnorm(AUC)
+			sigma = 2
 			rssy=list()
-			rssy.temp=RSSampling::con.rss(y,cy,m=n,r=max(lr))
+			rssy.temp=con.rss.sim.normal(m=n,r=max(lr),mu=mu,sigma=sigma,cor=cory)
 			for (ll in 1:n){
 				rssy[[ll]]=rssy.temp$sample.x[1:lr[ll],ll]
 			}
@@ -120,30 +111,22 @@ main.urss.uniform=function(pind,params,nsim=10000){
 		# RSS
 		rss.cond=TRUE
 		while(rss.cond==T){
-			# dist of X
-			nxsam = 10000
-			x=runif(nxsam)
-			mux = 0.5
-			sigma = sqrt(1/12)
-			# concomitant of X
-			cx=corx*((x-mux)/sigma) + sqrt(1-corx^2)*rnorm(nxsam)
-			
-			# dist of Y
-			ny.sam= 10000
-			theta = 1/(2-2*AUC)
-			muy = theta/2
-			sdy = sqrt(1/12*theta^2)
-			y=runif(ny.sam)*theta
-			# concomitant of y
-			cy=cory*((y-muy)/sdy) + sqrt(1-cory^2)*rnorm(ny.sam)
-			
+			# RSS sampling of X
 			rssx=list()
-			rssx.temp=RSSampling::con.rss(x,cx,m=m,r=max(ki))
+			rssx.temp=con.rss.sim.uniform(m=m,r=max(ki),mu=0.5,sigma=sqrt(1/12),
+			                              cor=corx,theta=1)
 			for (kk in 1:m){
 				rssx[[kk]]=rssx.temp$sample.x[1:ki[kk],kk]
 			}
+			
+			# RSS sampling of Y
+			theta = 1/(2-2*AUC)
+			muy = theta/2
+			sdy = sqrt(1/12*theta^2)
+
 			rssy=list()
-			rssy.temp=RSSampling::con.rss(y,cy,m=n,r=max(lr))
+			rssy.temp=con.rss.sim.uniform(m=n,r=max(lr),mu=muy,sigma=sqrt(1/12*theta^2),
+			                              cor=cory,theta=theta)
 			for (ll in 1:n){
 				rssy[[ll]]=rssy.temp$sample.x[1:lr[ll],ll]
 			}
@@ -218,35 +201,30 @@ main.urss.lognormal=function(pind,params,nsim=10000){
 		# RSS
 		rss.cond=TRUE
 		while(rss.cond==T){
-			# dist of X
-			nxsam = 10000
-			x=rlnorm(nxsam)
-			# concomitant of X
-			mux=exp(1/2)
-			sdx=sqrt( (exp(1)-1)*exp(1) )
-			cx=corx*((x-mux)/sdx) + sqrt(1-corx^2)*rnorm(nxsam)
-			
-			# dist of Y
-			ny.sam= 10000
-			sig=2
-			muy.temp = sqrt(sig^2+1)*qnorm(AUC)
-			sdy.temp = sig
-			muy=exp(muy.temp+(sdy.temp^2)/2)
-			sdy=sqrt( (exp(sdy.temp^2)-1)*exp(2*muy.temp+sdy.temp^2) )
-			y=rlnorm(ny.sam,meanlog=muy.temp,sdlog=sdy.temp)
-			# concomitant of y
-			cy=cory*((y-muy)/sdy) + sqrt(1-cory^2)*rnorm(ny.sam)
-			
-			rssx=list()
-			rssx.temp=RSSampling::con.rss(x,cx,m=m,r=max(ki))
-			for (kk in 1:m){
-				rssx[[kk]]=rssx.temp$sample.x[1:ki[kk],kk]
-			}
-			rssy=list()
-			rssy.temp=RSSampling::con.rss(y,cy,m=n,r=max(lr))
-			for (ll in 1:n){
-				rssy[[ll]]=rssy.temp$sample.x[1:lr[ll],ll]
-			}
+		  # RSS sampling of X
+		  mux=exp(1/2)
+		  sdx=sqrt( (exp(1)-1)*exp(1) )
+		  
+		  rssx=list()
+		  rssx.temp=con.rss.sim.lognormal(m=m,r=max(ki),meanlog=0,sdlog=1,
+		                                  mu=mux,sigma=sdx,cor=corx)
+		  for (kk in 1:m){
+		    rssx[[kk]]=rssx.temp$sample.x[1:ki[kk],kk]
+		  }
+		  
+		  # RSS sampling of Y
+		  sig=1
+		  muy.temp = sqrt(sig^2+1)*qnorm(AUC)
+		  sdy.temp = sig
+		  muy=exp(muy.temp+(sdy.temp^2)/2)
+		  sdy=sqrt( (exp(sdy.temp^2)-1)*exp(2*muy.temp+sdy.temp^2) )
+		  
+		  rssy=list()
+		  rssy.temp=con.rss.sim.lognormal(m=n,r=max(lr),meanlog=muy.temp,sdlog=sdy.temp,
+		                                  mu=muy,sigma=sdy,cor=cory)
+		  for (ll in 1:n){
+		    rssy[[ll]]=rssy.temp$sample.x[1:lr[ll],ll]
+		  }
 			
 			rssx.vec=unlist(rssx)
 			rssy.vec=unlist(rssy)

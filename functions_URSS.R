@@ -299,3 +299,110 @@ urss.el.rnew = function(rssx.vec,rssy.vec,rssx,rssy,m,ki,n,lr,nx,ny) {
 		return(rss.el.res)
 	}
 }
+
+
+
+##################################################################
+############ RSS sampling function for simulations ###############
+##################################################################
+
+# RSS sampling function for normal distribution simulations
+con.rss.sim.normal = function(m,r,mu,sigma,cor){
+  
+  sample.x=numeric()
+  A=matrix(0,nrow=(m*r),ncol=(m*2))
+  
+  a=1
+  b=0
+  for (j in 1:r){
+    for (i in 1:m){
+      y=stats::rnorm(m,mu,sigma)
+      cy=cor*((y-mu)/sigma) + sqrt(1-cor^2)*stats::rnorm(m)
+      set.xy=data.frame(y,cy)
+      sample.x[a]=set.xy[sort.list(set.xy[,2]),][i,1]
+      a=a+1
+    }
+    b=b+m
+  }
+  
+  sample.x=matrix(sample.x,ncol=m,nrow=r,byrow=T)
+  cn=rn=numeric()
+  for (i in 1:r){
+    rn[i]=paste("r","=",i)
+  }
+  for (i in 1:m){
+    cn[i]=paste("m","=",i)
+  }
+  rownames(sample.x)=rn
+  colnames(sample.x)=cn
+  
+  return(list(sample.x=sample.x))
+}
+
+
+# RSS sampling function for uniform distribution simulations
+con.rss.sim.uniform = function(m,r,mu,sigma,cor,theta=1){
+  sample.x=numeric()
+  A=matrix(0,nrow=(m*r),ncol=(m*2))
+  
+  a=1
+  b=0
+  for (j in 1:r){
+    for (i in 1:m){
+      y=stats::runif(m)*theta
+      cy=cor*((y-mu)/sigma) + sqrt(1-cor^2)*stats::rnorm(m)
+      set.xy=data.frame(y,cy)
+      sample.x[a]=set.xy[sort.list(set.xy[,2]),][i,1]
+      a=a+1
+    }
+    b=b+m
+  }
+  
+  sample.x=matrix(sample.x,ncol=m,nrow=r,byrow=T)
+  cn=rn=numeric()
+  for (i in 1:r){
+    rn[i]=paste("r","=",i)
+  }
+  for (i in 1:m){
+    cn[i]=paste("m","=",i)
+  }
+  rownames(sample.x)=rn
+  colnames(sample.x)=cn
+  
+  return(list(sample.x=sample.x))
+}
+
+
+# RSS sampling function for lognormal distribution simulations
+con.rss.sim.lognormal = function(m,r,meanlog=0,sdlog=1,mu,sigma,cor){
+  sample.x=numeric()
+  A=matrix(0,nrow=(m*r),ncol=(m*2))
+  
+  a=1
+  b=0
+  for (j in 1:r){
+    for (i in 1:m){
+      y=stats::rlnorm(m,meanlog=meanlog,sdlog=sdlog)
+      cy=cor*((y-mu)/sigma) + sqrt(1-cor^2)*stats::rnorm(m)
+      set.xy=data.frame(y,cy)
+      sample.x[a]=set.xy[sort.list(set.xy[,2]),][i,1]
+      a=a+1
+    }
+    b=b+m
+  }
+  
+  sample.x=matrix(sample.x,ncol=m,nrow=r,byrow=T)
+  cn=rn=numeric()
+  for (i in 1:r){
+    rn[i]=paste("r","=",i)
+  }
+  for (i in 1:m){
+    cn[i]=paste("m","=",i)
+  }
+  rownames(sample.x)=rn
+  colnames(sample.x)=cn
+  
+  return(list(sample.x=sample.x))
+}
+
+

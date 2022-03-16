@@ -4,10 +4,10 @@ library(RSSampling)
 # code for computation time
 
 # parameters
-# n = 20, 40, 80
+# n = 20
 # m = 2, 4, 5
-# AUC = 0.6, 0.8, 0.9
-# ranking 1, 0.9, 0.7
+# AUC = 0.6
+# ranking 1
 params=expand.grid(nx=c(20),m=c(2,4,5),
                    AUC=c(0.6),corxy=c(1))
 
@@ -92,7 +92,7 @@ main.brss.el=function(pind,params,nsim=10000){
     rss.cond=TRUE
     while(rss.cond==T){
       # dist of X
-      nxsam = 10000
+      nxsam = m^2*k
       x=stats::runif(nxsam)
       mux = 0.5
       sigma = sqrt(1/12)
@@ -100,16 +100,16 @@ main.brss.el=function(pind,params,nsim=10000){
       cx=corx*((x-mux)/sigma) + sqrt(1-corx^2)*rnorm(nxsam)
       
       # dist of Y
-      ny.sam= 10000
+      nysam= n^2*l
       theta = 1/(2-2*AUC)
       muy = theta/2
       sdy = sqrt(1/12*theta^2)
-      y=stats::runif(ny.sam)*theta
+      y=stats::runif(nysam)*theta
       # concomitant of y
-      cy=cory*((y-muy)/sdy) + sqrt(1-cory^2)*rnorm(ny.sam)
+      cy=cory*((y-muy)/sdy) + sqrt(1-cory^2)*rnorm(nysam)
       
-      rssx=RSSampling::con.rss(x,cx,m=m,r=k)
-      rssy=RSSampling::con.rss(y,cy,m=n,r=l)
+      rssx=con.rss.sim(x,cx,m=m,r=k)
+      rssy=con.rss.sim(y,cy,m=n,r=l)
       
       rssx.vec=as.vector(rssx$sample.x)
       rssy.vec=as.vector(rssy$sample.x)
@@ -179,7 +179,7 @@ main.brss.ker=function(pind,params,nsim=10000){
     rss.cond=TRUE
     while(rss.cond==T){
       # dist of X
-      nxsam = 10000
+      nxsam = m^2*k
       x=stats::runif(nxsam)
       mux = 0.5
       sigma = sqrt(1/12)
@@ -187,16 +187,16 @@ main.brss.ker=function(pind,params,nsim=10000){
       cx=corx*((x-mux)/sigma) + sqrt(1-corx^2)*rnorm(nxsam)
       
       # dist of Y
-      ny.sam= 10000
+      nysam= n^2*l
       theta = 1/(2-2*AUC)
       muy = theta/2
       sdy = sqrt(1/12*theta^2)
-      y=stats::runif(ny.sam)*theta
+      y=stats::runif(nysam)*theta
       # concomitant of y
-      cy=cory*((y-muy)/sdy) + sqrt(1-cory^2)*rnorm(ny.sam)
+      cy=cory*((y-muy)/sdy) + sqrt(1-cory^2)*rnorm(nysam)
       
-      rssx=RSSampling::con.rss(x,cx,m=m,r=k)
-      rssy=RSSampling::con.rss(y,cy,m=n,r=l)
+      rssx=con.rss.sim(x,cx,m=m,r=k)
+      rssy=con.rss.sim(y,cy,m=n,r=l)
       
       rssx.vec=as.vector(rssx$sample.x)
       rssy.vec=as.vector(rssy$sample.x)
