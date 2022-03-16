@@ -215,7 +215,7 @@ urss.el.rnew = function(rssx.vec,rssy.vec,rssx,rssy,m,ki,n,lr,nx,ny) {
   # The adjusted EL function el.auc is used. 
   
   ## input:
-  ### rssx and rssy are the ranked set samples obtained by RSSampling::con.rss of x and y, respectively.
+  ### rssx and rssy are the ranked set samples of x and y, respectively.
   ### rssx.vec and rssy.vec are the sampled observations of rssx and rssy without rank information.
   ### m and n are the set sizes for x and y, respectively.
   ### ki is a vector of size m, whose vector elements are the number of observations quantified in m rank strata
