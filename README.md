@@ -1,7 +1,7 @@
 # Empirical Likelihood Inference for Area under the ROC Curve using Ranked Set Samples
 
 The area under a receiver operating characteristic curve (AUC) is a useful tool to assess the performance of continuous-scale diagnostic tests on binary classification. 
-In [Moon et al.](https://arxiv.org/abs/2010.12185), we propose an empirical likelihood (EL) method to construct confidence intervals for the AUC from data 
+In [Moon et al.](https://doi.org/10.1002/pst.2230), we propose an empirical likelihood (EL) method to construct confidence intervals for the AUC from data 
 collected by ranked set sampling (RSS). The proposed EL-based method enables inferences without assumptions required in existing nonparametric methods and 
 takes advantage of the sampling efficiency of RSS. We show that for both balanced and unbalanced RSS, the EL-based point estimate is the Mann-Whitney statistic, 
 and confidence intervals can be obtained from a scaled chi-square distribution. 
