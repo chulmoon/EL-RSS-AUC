@@ -1,25 +1,22 @@
-# Empirical Likelihood Inference for Area under the ROC Curve using Ranked Set Samples
+# Enhancing Empathic Accuracy: Penalized Functional Alignment Method to Correct Temporal Misalignment in Real-time Emotional Perception
 
-The area under a receiver operating characteristic curve (AUC) is a useful tool to assess the performance of continuous-scale diagnostic tests on binary classification. 
-In [Moon et al.](https://doi.org/10.1002/pst.2230), we propose an empirical likelihood (EL) method to construct confidence intervals for the AUC from data 
-collected by ranked set sampling (RSS). The proposed EL-based method enables inferences without assumptions required in existing nonparametric methods and 
-takes advantage of the sampling efficiency of RSS. We show that for both balanced and unbalanced RSS, the EL-based point estimate is the Mann-Whitney statistic, 
-and confidence intervals can be obtained from a scaled chi-square distribution. 
+Empathic accuracy (EA) is the ability to accurately understand another person's thoughts and feelings, which is crucial for social and psychological interactions. Traditionally, EA is assessed by comparing a perceiver’s moment-to-moment ratings of a target’s emotional state with the target’s own self-reported ratings at corresponding time points. However, misalignments between these two sequences are common due to the complexity of emotional interpretation and individual differences in behavioral responses. Conventional methods often ignore or oversimplify these misalignments, for instance by assuming a fixed time lag, which can introduce bias into EA estimates. 
 
-Simulation studies and two case studies on diabetes and chronic kidney disease data are carried and show that the proposed method performs better than the existing methods.
-
-# Data Availability
-Two case studies are based upon data collected from [National Health and Nutrition Examination Survey (NHANES)](https://www.cdc.gov/nchs/nhanes/). 
-The NHANES data are publicly available and retrieved in R.
+To address this, we propose a novel alignment approach that captures a wide range of misalignment patterns. Our method leverages the square-root velocity framework to decompose emotional rating trajectories into amplitude and phase components. To ensure realistic alignment, we introduce a regularization constraint that limits temporal shifts to ranges consistent with human perceptual capabilities. We validate our method through simulations and real-world applications involving video and music datasets.
 
 # Reproducing Simulation and Case Studies
 1. Simulation studies \
-Run `run_simulation_BRSS.R` and `run_simulation_URSS.R` for balanced RSS and unbalanced RSS studies. For plots, run `results_BRSS.R` and `results_URSS.R`. Run `run_simulation_BRSS_reference.R` for comparing reference distributions.
-2. Diabetes case study \
-Run `run_diabetes_application.R` and `results_diabetes.R` for applications and plots, respectively.
-3. Chronic kidney disease case study \
-Run `run_sim_ckd_application.R` and `results_ckd.R` for applications and plots, respectively. To retrieve the CKD data used in this study `data_ckd.Rdata`, run `data_ckd.R`.
-4. Simulation time \
-Run `simulation_time.R` for computing the simulation time.
-6. Toy example \
-Run `example.R` for a toy example that computes confidence intervals of BRSS-EL and URSS-EL.
+- run `simulation_1_main_*.R`, `simulation_2_main.R`, and `simulation_3_main_*.R` for simulation studies.
+- run `simulation_1_summary.R`, `simulation_2_summary.R`, and `simulation_3_summary.R` for summaries.
+  
+2. Case study 1 \
+- run “alignment.R” to produce “Delvinetal_allcorrelations_08012025.Rdata”
+- run “postAlignment-analyses.R” to produce all plots in the folder plots
+- run “covariates-analysis.R” to produce Table 3 in the main ms
+3. Case study 2 \
+- run “alignment.R” to produce “Tabaketal_allMeasures_06012025.Rdata” (this will call the file “casestudy2-ancillary-func.R)
+- run “Tabaketal_plots_threshold6s” to produce all plots in plots/Tabak_threshold6s.pdf
+- run “Tabaketal_plots_threshold8s” to produce all plots in plots/Tabak_threshold8s.pdf
+- run “Tabaketal_plots_threshold10s” to produce all plots in plots/Tabak_threshold10s.pdf
+
+* For running `*_l1p.R`, use `fdasrvf` version >= 2.0.0. For the others, use the attached `fdasrvf_1.9.8.tar.gz`.
